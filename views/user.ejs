@@ -1,0 +1,142 @@
+<h3>Welcome back, <%= username %>!</h3>
+<div class="bg-danger text-white border border-2 my-4 mx-2 p-3" id="verificationPanel" <%- verification %>>
+    <b>Please enter the verification code sent to your email:</b>
+    <br>
+    <form class="mx-auto my-2" id="verificationForm">
+        <div class="row">
+            <div class="col-8">
+                <input type="text" class="form-control" id="uVerification" placeholder="Paste code here">
+            </div>
+            <div class="col-2">
+                <button type="submit" class="btn btn-dark">Verify</button>
+            </div>
+            <div class="col-2">
+                <button type="none" class="btn btn-dark" id="resendEmail">Resend</button>
+            </div>
+        </div>
+    </form>
+    <script>
+        $("#resendEmail").on('click', function (e) {
+            var xhr = $.ajax({
+                method: "POST",
+                url: "/account/resend"
+            }).done(function (data) {
+                console.log("");
+            });
+
+            e.preventDefault();
+            xhr.always(function (data, textStatus, jqXHR) {
+                if (data && textStatus == "success") {
+                    $("#mainToast").removeClass("bg-danger");
+                    $("#mainToast").addClass("bg-primary");
+                    $("#toastBody").text(jqXHR.responseText);
+                } else {
+                    $("#mainToast").removeClass("bg-primary");
+                    $("#mainToast").addClass("bg-danger");
+                    $("#toastBody").text(data.responseJSON.error);
+                }
+                $(".toast").toast('show');
+            });
+            e.preventDefault();
+        });
+
+        $("#verificationForm").submit(function (e) {
+            var code = $("#uVerification").val();
+
+            var xhr = $.ajax({
+                method: "POST",
+                url: "/account/verify",
+                data: { "code": code }
+            }).done(function (data) {
+                console.log("");
+            });
+
+            e.preventDefault();
+            xhr.always(function (data, textStatus, jqXHR) {
+                if (data && textStatus == "success") {
+                    $("#mainToast").removeClass("bg-danger");
+                    $("#mainToast").addClass("bg-primary");
+                    $("#toastBody").text(jqXHR.responseText);
+                    $("#verificationPanel").hide(200);
+                    loadUserPanel();
+                } else {
+                    $("#mainToast").removeClass("bg-primary");
+                    $("#mainToast").addClass("bg-danger");
+                    $("#toastBody").text(data.responseJSON.error);
+                }
+                $(".toast").toast('show');
+            });
+            e.preventDefault();
+        });
+    </script>
+</div>
+<br>
+<div class="border border-2 mx-2 p-3">
+    <a href="/downloads/sharex" target="_blank">Download</a> the ShareX config and update the username and password parameters
+    <br>
+    <a href="discordlink" target="_blank">Join</a> the Discord server
+</div>
+<br>
+<table class="table mb-1">
+    <thead>
+        <tr>
+            <th scope="col">Invites</th>
+        </tr>
+    </thead>
+    <tbody>
+        <%- invites %>
+    </tbody>
+</table>
+<div class="text-end mb-3">
+    <small class="text-end">* not yet valid</small>
+</div>
+<br>
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Invitees</th>
+        </tr>
+    </thead>
+    <tbody>
+        <%- invitees %>
+    </tbody>
+</table>
+<br>
+<br>
+<br>
+<h5>Hover over an image in the list to see a preview</h5>
+<table class="table">
+    <tbody>
+        <%- images %>
+    </tbody>
+</table>
+<br>
+<div>
+    <img id="preview" class="img-thumbnail mx-auto d-block">
+</div>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>

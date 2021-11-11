@@ -1,0 +1,16 @@
+﻿{
+  "Version": "13.4.0",
+  "DestinationType": "ImageUploader",
+  "RequestMethod": "POST",
+  "RequestURL": "https://primarydomain.com/api/sharex",
+  "Body": "MultipartFormData",
+  "Arguments": {
+    "username": "USERNAME_HERE",
+    "password": "PASSWORD_HERE",
+    "domain": "primarydomain.com",
+    "sub": ""
+  },
+  "FileFormName": "image",
+  "URL": "$json:success$",
+  "ErrorMessage": "$json:error$"
+}

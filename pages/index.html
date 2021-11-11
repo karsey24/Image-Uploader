@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Homepage - primarydomain.com</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+
+    <link href="style.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@300&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
+        crossorigin="anonymous"></script>
+    <script src="https://hcaptcha.com/1/api.js" async defer></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom border-3 px-5 py-1">
+        <div class="container-fluid">
+            <a class="navbar-brand mx-4" href="https://primarydomain.com">Primary Domain</a>
+            <button class="navbar-toggler my-2" type="button" data-bs-toggle="collapse" data-bs-target="#navContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <nav class="collapse navbar-collapse" id="navContent">
+                <ul class="navbar-nav ms-sm-auto me-sm-4 mx-xs-auto text-center">
+                    <li class="nav-item">
+                      <a class="nav-link" href="https://shoppy.gg/" target="_blank">Purchase an invite</a>
+                    </li>
+                    <li class="nav-item" id="logoutLink" style="display:none;">
+                      <a class="nav-link" href="#" >Logout</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </nav>
+    <div class="sticky-top">
+        <div class="toast-container mx-auto pt-1">
+            <div class="toast d-flex align-items-center text-white bg-primary border-0" id="mainToast" role="alert">
+                <div class="toast-body" id="toastBody">
+
+                </div>
+                <button type="button" class="btn-close btn-close-white ms-auto me-2" data-bs-dismiss="toast">
+
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container w-100 py-5" id="login">
+        <div class="row">
+            <form class="col-lg-5 mx-auto" id="loginForm">
+                <h3>Login</h3>
+                <div class="mb-3">
+                    <label for="lUsername" class="form-label">Username</label>
+                    <input type="text" class="form-control" id="lUsername">
+                </div>
+                <div class="mb-3">
+                    <label for="lPassword" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="lPassword">
+                </div>
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
+            <script>
+                $("#loginForm").submit(function (e) {
+                    var user = $("#lUsername").val();
+                    var pass = $("#lPassword").val();
+
+                    var xhr = $.ajax({
+                        method: "POST",
+                        url: "/account/login",
+                        data: { "username": user, "password": pass }
+                    }).done(function (data) {
+                        console.log("");
+                    });
+
+                    e.preventDefault();
+                    xhr.always(function (data, textStatus, jqXHR) {
+                        if (data && data == "hello") {
+                            $("#mainToast").removeClass("bg-danger");
+                            $("#mainToast").addClass("bg-primary");
+                            $("#toastBody").text("Signed in");
+
+                            $.post("/account/page", function (data) {
+                                $("#logoutLink").show();
+                                $("#userContent").html(data);
+                                $("#register").hide(100);
+                                $("#login").hide(400);
+                            });
+                        } else {
+                            $("#mainToast").removeClass("bg-primary");
+                            $("#mainToast").addClass("bg-danger");
+                            $("#toastBody").text(data.responseJSON.error);
+                        }
+                        $(".toast").toast('show');
+                    });
+                    e.preventDefault();
+                });
+            </script>
+        </div>
+    </div>
+
+
+    <div class="container w-100 py-5" id="register">
+        <div class="row">
+            <form class="col-lg-5 mx-auto" id="registerForm">
+                <h3>Register</h3>
+                <div class="mb-3">
+                    <label for="rInvite" class="form-label">Invite</label>
+                    <input type="text" class="form-control" id="rInvite">
+                </div>
+                <div class="mb-3">
+                    <label for="rEmail" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="rEmail">
+                </div>
+                <div class="mb-3">
+                    <label for="rUsername" class="form-label">Username</label>
+                    <input type="text" class="form-control" id="rUsername">
+                </div>
+                <div class="mb-3">
+                    <label for="rPassword" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="rPassword">
+                </div>
+                <div class="h-captcha mb-2" data-sitekey="079620f1-get-your-own"></div>
+                <button type="submit" class="btn btn-primary">Register</button>
+            </form>
+            <script>
+                $("#registerForm").submit(function (e) {
+                    var inv = $("#rInvite").val();
+                    var email = $("#rEmail").val();
+                    var user = $("#rUsername").val();
+                    var pass = $("#rPassword").val();
+                    var secure = $('textarea[name="h-captcha-response"]').val();
+
+                    if (isEmptyOrSpaces(secure)) {
+                        $("#mainToast").removeClass("bg-primary");
+                        $("#mainToast").addClass("bg-danger");
+                        $("#toastBody").text("Please complete the CAPTCHA");
+                        e.preventDefault();
+                        $(".toast").toast('show');
+                        return;
+                    }
+
+                    var xhr = $.ajax({
+                        method: "POST",
+                        url: "/account/register",
+                        data: { "invite": inv, "email": email, "username": user, "password": pass, "token": secure }
+                    }).done(function (data) {
+                        console.log("");
+                    });
+
+                    e.preventDefault();
+                    xhr.always(function (data, textStatus, jqXHR) {
+                        if (data && data.success) {
+                            $("#mainToast").removeClass("bg-danger");
+                            $("#mainToast").addClass("bg-primary");
+                            $("#toastBody").text("Registered successfully, please sign in and verify your email");
+
+                            $("#register").hide(200);
+                        } else {
+                            $("#mainToast").removeClass("bg-primary");
+                            $("#mainToast").addClass("bg-danger");
+                            $("#toastBody").text(data.responseJSON.error);
+                        }
+                        $(".toast").toast('show');
+                    });
+                    hcaptcha.reset();
+                    e.preventDefault();
+                });
+            </script>
+        </div>
+    </div>
+
+
+    <div class="container w-100 py-1">
+        <div class="row">
+            <div class="col-lg-6 mx-auto" id="userContent">
+
+            </div>
+        </div>
+    </div>
+
+    <br>
+    <br>
+    <script>
+        var toastElList = [].slice.call(document.querySelectorAll('.toast'))
+        var toastList = toastElList.map(function (toastEl) {
+            return new bootstrap.Toast(toastEl);
+        });
+        $.ajaxSetup({
+            crossDomain: false,
+            xhrFields: {
+                withCredentials: true
+            },
+        });
+        function isEmptyOrSpaces(str) {
+            return str === null || str.match(/^ *$/) !== null;
+        }
+
+        function loadUserPanel(){
+            $.post("/account/page", function (data) {
+                $("#userContent").html(data);
+                document.title = "Account - primarydomain.com";
+                $("#login").hide();
+                $("#register").hide();
+                $("#logoutLink").show();
+            });
+        }
+        $(document).ready(function (){ loadUserPanel() });
+
+        $('body').on({
+            "mouseenter mouseleave": function (e) {
+                var link = this.children[0].children[0].getAttribute("href");
+                $("#preview").attr("src", link);
+            }
+        }, 'tr.imgRow');
+        $("#logoutLink").on("click", function (e) {
+            e.preventDefault();
+            $.post("/account/logout", function (data) {
+                location.reload();
+            });
+        });
+    </script>
+</body>
+
+</html>

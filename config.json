@@ -1,0 +1,9 @@
+{
+    "domain": "primarydomain.com",
+    "domains": [
+        "primarydomain.com",
+        "example.one",
+        "test.us",
+    ],
+    "ip": "255.255.255.255"
+}
